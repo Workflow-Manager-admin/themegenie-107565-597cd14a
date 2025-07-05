@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import "../pages/Themes.css";
 import { generateThemeCode } from "../utils/openrouter";
 
-// PUBLIC_INTERFACE
 /**
  * CodeLab page: Modern AI-powered code generation with theme dropdown,
- * idea input, and colorfully styled, responsive output for HTML, CSS, JS.
+ * idea input, and shows HTML, CSS, JS in responsive textareas with Copy buttons.
+ * Simple, login-free, and mobile-friendly layout.
  */
+// PUBLIC_INTERFACE
 function CodeLab() {
   const THEMES = [
     { value: "Anime", label: "Anime", accent: "var(--anime-color)", bg: "linear-gradient(120deg,#ede9fe 0%,#fbcfe8 100%)" },
@@ -17,14 +18,15 @@ function CodeLab() {
   const [idea, setIdea] = useState("");
   const [loading, setLoading] = useState(false);
   const [outputs, setOutputs] = useState({ html: "", css: "", js: "" });
-  const [raw, setRaw] = useState(""); // For debugging, shows full Gemini/OpenRouter response
+  const [raw, setRaw] = useState(""); // For debugging, shows full API response
+  const [copied, setCopied] = useState({ html: false, css: false, js: false });
 
-  // Extract HTML, CSS, JS from a multi-part code string from OpenRouter Gemini
+  // Extract HTML, CSS, JS from a multi-part code string
   function parseCodeSections(code) {
     if (!code) return { html: "", css: "", js: "" };
     let html = "", css = "", js = "";
 
-    // Primary mode: ---HTML---, ---CSS---, ---JS--- blocks
+    // ---HTML---, ---CSS---, ---JS--- blocks (OpenRouter format)
     const htmlMatch = code.match(/---HTML---([\s\S]*?)(?=(---CSS---|---JS---|$))/i);
     const cssMatch = code.match(/---CSS---([\s\S]*?)(?=(---JS---|$))/i);
     const jsMatch = code.match(/---JS---([\s\S]*)/i);
@@ -33,7 +35,7 @@ function CodeLab() {
     if (cssMatch) css = cssMatch[1].replace(/<\/?style[^>]*>/gi, "").trim();
     if (jsMatch) js = jsMatch[1].replace(/<\/?script[^>]*>/gi, "").trim();
 
-    // Fallback: legacy code with <style> and <script>
+    // Fallback for models returning <style> and <script>
     if (!html && !css && !js && code) {
       const legacyStyleMatch = code.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
       const legacyScriptMatch = code.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
@@ -53,13 +55,24 @@ function CodeLab() {
     return { html, css, js };
   }
 
+  // Copy contents to clipboard and show feedback
+  const handleCopy = async (type, value) => {
+    try {
+      await navigator.clipboard.writeText(value || "");
+      setCopied((prev) => ({ ...prev, [type]: true }));
+      setTimeout(() => setCopied((p) => ({ ...p, [type]: false })), 1200);
+    } catch {
+      setCopied((prev) => ({ ...prev, [type]: false }));
+    }
+  };
+
   // PUBLIC_INTERFACE
   async function handleGenerate(e) {
     e.preventDefault();
     setLoading(true);
     setOutputs({ html: "", css: "", js: "" });
     setRaw("");
-    // Use OpenRouter Gemini API utility for code generation
+    setCopied({ html: false, css: false, js: false });
     const code = await generateThemeCode(theme, idea);
     const sections = parseCodeSections(code);
     setOutputs(sections);
@@ -67,8 +80,8 @@ function CodeLab() {
     setLoading(false);
   }
 
-  // For accent colors, find current selected theme
-  const currentThemeObj = THEMES.find(t => t.value === theme);
+  // Use selected theme colors
+  const currentThemeObj = THEMES.find((t) => t.value === theme);
 
   return (
     <main
@@ -93,20 +106,24 @@ function CodeLab() {
           transition: "background 0.4s, border 0.3s",
         }}
       >
-        <h1 style={{
-          marginBottom: "0.42em",
-          fontWeight: 900,
-          letterSpacing: 1.2,
-          color: currentThemeObj.accent,
-          fontSize: "2.2rem",
-        }}>
+        <h1
+          style={{
+            marginBottom: "0.42em",
+            fontWeight: 900,
+            letterSpacing: 1.2,
+            color: currentThemeObj.accent,
+            fontSize: "2.2rem",
+          }}
+        >
           CodeLab – AI Theme Generator
         </h1>
-        <p style={{
-          color: "#444",
-          fontSize: "1.1em",
-          marginBottom: "1.2em"
-        }}>
+        <p
+          style={{
+            color: "#444",
+            fontSize: "1.1em",
+            marginBottom: "1.2em",
+          }}
+        >
           Pick a theme, describe your idea, and build creative site code (HTML, CSS, and JavaScript) using Gemini AI.
         </p>
 
@@ -117,12 +134,14 @@ function CodeLab() {
             flexWrap: "wrap",
             gap: "1rem",
             alignItems: "flex-end",
-            marginBottom: "2.2em"
+            marginBottom: "2.2em",
           }}
           aria-label="Theme and idea input"
         >
           <div style={{ minWidth: 150, flex: "1 1 160px", maxWidth: 220 }}>
-            <label htmlFor="theme-dropdown" style={{ fontWeight: 600, color: currentThemeObj.accent }}>Theme</label>
+            <label htmlFor="theme-dropdown" style={{ fontWeight: 600, color: currentThemeObj.accent }}>
+              Theme
+            </label>
             <select
               id="theme-dropdown"
               value={theme}
@@ -135,18 +154,22 @@ function CodeLab() {
                 border: `2px solid ${currentThemeObj.accent}`,
                 color: "#222",
                 fontSize: "1.07em",
-                outline: "none"
+                outline: "none",
               }}
-              onChange={e => setTheme(e.target.value)}
+              onChange={(e) => setTheme(e.target.value)}
               disabled={loading}
             >
-              {THEMES.map(option => (
-                <option value={option.value} key={option.value}>{option.label}</option>
+              {THEMES.map((option) => (
+                <option value={option.value} key={option.value}>
+                  {option.label}
+                </option>
               ))}
             </select>
           </div>
           <div style={{ flex: "2 1 320px" }}>
-            <label htmlFor="idea-input" style={{ fontWeight: 600, color: "#888" }}>Website / app idea</label>
+            <label htmlFor="idea-input" style={{ fontWeight: 600, color: "#888" }}>
+              Website / app idea
+            </label>
             <input
               id="idea-input"
               type="text"
@@ -163,7 +186,7 @@ function CodeLab() {
                 border: "1.8px solid #e5e7eb",
                 outline: "none",
               }}
-              onChange={e => setIdea(e.target.value)}
+              onChange={(e) => setIdea(e.target.value)}
               disabled={loading}
               aria-label="Describe your idea for the generator"
             />
@@ -181,7 +204,7 @@ function CodeLab() {
                 fontWeight: 700,
                 cursor: loading ? "not-allowed" : "pointer",
                 boxShadow: "0 2px 12px rgba(76,60,229,0.11)",
-                marginTop: 15
+                marginTop: 15,
               }}
               disabled={loading || !idea.trim()}
               aria-busy={loading}
@@ -191,16 +214,21 @@ function CodeLab() {
           </div>
         </form>
 
-        <ResponsivePreviewOutputs outputs={outputs} accent={currentThemeObj.accent} />
+        <OutputPanels
+          outputs={outputs}
+          accent={currentThemeObj.accent}
+          copied={copied}
+          onCopy={handleCopy}
+        />
 
-        {/* <textarea style={{display: "none"}} value={raw} readOnly rows={4} /> */}
-
-        <div style={{
-          margin: "2.4em 0 0",
-          textAlign: "right",
-          fontSize: "1em",
-          color: "#aaa",
-        }}>
+        <div
+          style={{
+            margin: "2.4em 0 0",
+            textAlign: "right",
+            fontSize: "1em",
+            color: "#aaa",
+          }}
+        >
           Powered by Gemini AI &nbsp; <span aria-label="sparkles" role="img">✨</span>
         </div>
       </section>
@@ -208,40 +236,54 @@ function CodeLab() {
   );
 }
 
-// Responsive component to display three labeled output boxes for HTML, CSS, JS.
-function ResponsivePreviewOutputs({ outputs, accent }) {
+/**
+ * Responsive section showing HTML, CSS, and JS in labeled copyable textareas.
+ */
+function OutputPanels({ outputs, accent, copied, onCopy }) {
+  // Responsive to 1col on mobile via inline style
   return (
-    <section style={{
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr 1fr",
-      gap: "1.2em",
-      marginTop: "0.2em",
-      marginBottom: "0.8em"
-    }}>
-      <PreviewPanel
+    <section
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        gap: "1.2em",
+        marginTop: "0.2em",
+        marginBottom: "0.8em",
+        width: "100%",
+      }}
+      aria-label="output-panels"
+    >
+      <CopyTextareaPanel
         label="HTML"
         value={outputs.html}
         accent={accent}
         gradient="linear-gradient(120deg,#ede9fe 0%,#fbcfe8 100%)"
         codeColor="#7c3aed"
+        copied={copied.html}
+        onCopy={() => onCopy("html", outputs.html)}
       />
-      <PreviewPanel
+      <CopyTextareaPanel
         label="CSS"
         value={outputs.css}
         accent={accent}
         gradient="linear-gradient(90deg,#fef3c7 10%,#a7f3d0 100%)"
         codeColor="#10b981"
+        copied={copied.css}
+        onCopy={() => onCopy("css", outputs.css)}
       />
-      <PreviewPanel
+      <CopyTextareaPanel
         label="JavaScript"
         value={outputs.js}
         accent={accent}
         gradient="linear-gradient(130deg,#e0f2fe,#f1f5f9 100%)"
         codeColor="#1e293b"
+        copied={copied.js}
+        onCopy={() => onCopy("js", outputs.js)}
       />
+
       <style>{`
         @media (max-width: 960px) {
-          section[aria-label="output-panels"] { grid-template-columns: 1fr !important;}
+          section[aria-label="output-panels"] { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </section>
@@ -249,7 +291,10 @@ function ResponsivePreviewOutputs({ outputs, accent }) {
 }
 
 // PUBLIC_INTERFACE
-function PreviewPanel({ label, value, accent, gradient, codeColor }) {
+/**
+ * Labeled textarea block with a Copy-to-Clipboard button.
+ */
+function CopyTextareaPanel({ label, value, accent, gradient, codeColor, copied, onCopy }) {
   return (
     <div
       style={{
@@ -265,15 +310,42 @@ function PreviewPanel({ label, value, accent, gradient, codeColor }) {
       }}
       aria-label={`${label}-output`}
     >
-      <span style={{
-        fontWeight: 800,
-        letterSpacing: 1.1,
-        fontSize: "1.08em",
-        color: codeColor,
-        marginBottom: "0.3em"
-      }}>
-        {label}
-      </span>
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "0.4em" }}>
+        <span
+          style={{
+            fontWeight: 800,
+            letterSpacing: 1.1,
+            fontSize: "1.08em",
+            color: codeColor,
+            flex: 1,
+          }}
+        >
+          {label}
+        </span>
+        <button
+          type="button"
+          onClick={onCopy}
+          title={`Copy ${label} code`}
+          style={{
+            background: accent,
+            color: "#fff",
+            border: "none",
+            borderRadius: 7,
+            fontSize: "0.98em",
+            fontWeight: 600,
+            cursor: value ? "pointer" : "not-allowed",
+            opacity: value ? 1 : 0.65,
+            padding: "0.25em 0.7em",
+            marginLeft: 8,
+            marginBottom: 0,
+            transition: "background 0.2s, opacity 0.2s",
+            minWidth: 62,
+          }}
+          disabled={!value}
+        >
+          {copied ? "Copied!" : "Copy"}
+        </button>
+      </div>
       <textarea
         value={value}
         readOnly
