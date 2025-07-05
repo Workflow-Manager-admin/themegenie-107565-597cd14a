@@ -2,7 +2,6 @@
 // OpenRouter Gemini API Utility for Theme Code Generation
 //
 
-// PUBLIC_INTERFACE
 /**
  * Calls the OpenRouter Gemini endpoint to generate HTML, CSS, and JS code for a user prompt.
  * @param {string} theme - Theme style for code generation ("Anime", "Disney", etc.)
@@ -14,13 +13,16 @@
  * const result = await generateThemeCode("Anime", "portfolio for a chef");
  * // The result string will include three blocks labeled ---HTML---, ---CSS---, ---JS---
  */
-export async function generateThemeCode(theme, idea) {
-  // You should move this API key to an environment variable (.env), e.g., REACT_APP_OPENROUTER_KEY, in production
-  // For demo/testing, we include it here as requested.
-  const OPENROUTER_API_KEY = "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";
 
-  if (!OPENROUTER_API_KEY) {
-    return "❌ Error: OpenRouter API key not set in openrouter.js.";
+// API KEY should be sourced from the environment for security.
+// In React create-react-app, you must prefix with REACT_APP_ to expose to frontend.
+const OPENROUTER_KEY = process.env.REACT_APP_OPENROUTER_KEY;
+console.log("API KEY:", OPENROUTER_KEY); // Debug print for env configuration
+
+// PUBLIC_INTERFACE
+export async function generateThemeCode(theme, idea) {
+  if (!OPENROUTER_KEY) {
+    return "❌ Error: OpenRouter API key not set in environment (REACT_APP_OPENROUTER_KEY).";
   }
 
   const endpoint = "https://openrouter.ai/api/v1/chat/completions";
@@ -53,7 +55,7 @@ Respond in this exact format:
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        Authorization: `Bearer ${OPENROUTER_KEY}`,
       },
       body: JSON.stringify(body),
     });
