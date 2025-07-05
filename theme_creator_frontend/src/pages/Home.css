@@ -3,6 +3,7 @@
   max-width: 880px;
   margin: 0 auto;
   padding: 2.2rem 1.2rem 1.6rem 1.2rem;
+  /* No margin-top for navbar overlap; handled by App.css */
   box-sizing: border-box;
 }
 

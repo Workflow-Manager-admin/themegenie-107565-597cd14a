@@ -29,6 +29,18 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Layout main content padding for spacing below sticky navbar */
+.app-main-content {
+  padding-top: 70px; /* matches Navbar height on desktop */
+  min-height: 80vh;
+}
+
+@media (max-width: 768px) {
+  .app-main-content {
+    padding-top: 58px; /* matches Navbar mobile height */
+  }
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

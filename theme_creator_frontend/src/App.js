@@ -30,7 +30,8 @@ function App() {
           {theme === "light" ? "🌙 Dark" : "☀️ Light"}
         </button>
         <Navbar />
-        <div style={{ marginTop: "5rem" }}>
+        {/* Apply a global padding top to main content, matching the Navbar height */}
+        <div className="app-main-content">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/themes" element={<Themes />} />

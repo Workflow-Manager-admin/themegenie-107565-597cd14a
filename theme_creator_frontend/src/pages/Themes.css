@@ -1,0 +1,190 @@
+:root {
+  --anime-color: #7c3aed;
+  --disney-color: #f59e42;
+  --professional-color: #1e293b;
+  --anime-accent: #f472b6;
+  --disney-accent: #333cff;
+  --professional-accent: #38bdf8;
+}
+
+.themes-page-main {
+  max-width: 1110px;
+  margin: 0 auto;
+  padding: 2rem 1.2rem;
+  width: 100%;
+}
+
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 2.5rem;
+  margin-bottom: 2.8rem;
+}
+
+@media (max-width: 900px) {
+  .themes-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+}
+
+.theme-card {
+  border-radius: 22px;
+  box-shadow: 0 8px 36px 0 rgba(79,70,229,0.08), 0 1px 4px 0 rgba(0,0,0,0.07);
+  background: var(--bg-secondary);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+  min-height: 330px;
+  border: 3px solid transparent;
+  transition: border 0.25s, box-shadow 0.22s;
+}
+
+.theme-card.anime {
+  border-color: var(--anime-color);
+  background: linear-gradient(135deg, #ede9fe 0%, #fbcfe8 100%);
+}
+.theme-card.disney {
+  border-color: var(--disney-color);
+  background: linear-gradient(135deg, #fef3c7 0%, #dbeafe 100%);
+}
+.theme-card.professional {
+  border-color: var(--professional-color);
+  background: linear-gradient(130deg, #e0f2fe 0%, #f1f5f9 100%);
+}
+
+.theme-card .theme-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin-bottom: 0.7rem;
+  letter-spacing: 1px;
+  color: var(--anime-color);
+}
+.theme-card.disney .theme-title { color: var(--disney-color);}
+.theme-card.professional .theme-title { color: var(--professional-color);}
+
+.theme-description {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #444;
+}
+.theme-card.professional .theme-description {
+  color: #334155;
+}
+
+.try-ai-btn {
+  margin-top: auto;
+  align-self: flex-end;
+  background: linear-gradient(90deg,#7c3aed,#f472b6,#4f46e5);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.62em 1.2em;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(76,60,229,0.13);
+  transition: transform 0.2s, background 0.17s;
+}
+.theme-card.disney .try-ai-btn {
+  background: linear-gradient(88deg,#f59e42,#333cff 80%);
+}
+.theme-card.professional .try-ai-btn {
+  background: linear-gradient(92deg,#1e293b,#38bdf8 80%);
+}
+.try-ai-btn:hover,.try-ai-btn:focus { transform: scale(1.05); opacity: 0.92;}
+
+@media (max-width: 700px) {
+  .themes-grid {
+    grid-template-columns: 1fr;
+    gap: 1.4rem;
+    margin-top: 1.3rem;
+  }
+  .themes-page-main {
+    padding: 0.8rem 0.25rem;
+  }
+  .theme-card {
+    padding: 1rem 0.6rem 1.1rem 0.7rem;
+    min-height: 270px;
+  }
+}
+
+/* Try AI Expander */
+.ai-section {
+  margin-top: 1.2rem;
+  background: rgba(255,255,255,0.76);
+  border-radius: 12px;
+  box-shadow: 0 1px 8px rgba(79,70,229,0.06);
+  padding: 1.2rem 0.8rem 0.8rem 0.92rem;
+  animation: scaleIn 0.17s cubic-bezier(.43,1.4,.36,1.01);
+}
+
+@keyframes scaleIn {
+  from {opacity: 0;transform: scale(0.97);}
+  to {opacity: 1;transform: scale(1);}
+}
+
+.theme-ai-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.theme-card.professional .theme-ai-label { color: #1e293b; }
+.theme-card.disney .theme-ai-label { color: #f59e42; }
+
+.theme-ai-input-row {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0.55rem 0 1rem 0;
+  flex-wrap: wrap;
+}
+.theme-ai-input {
+  flex: 1 1 140px;
+  padding: 0.48em 0.75em;
+  border-radius: 7px;
+  border: 1.5px solid #e5e7eb;
+  font-size: 1rem;
+  margin-right: 0.6em;
+  outline: none;
+}
+.theme-ai-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 1.5px #a5b4fc55;
+}
+.theme-card.disney .theme-ai-input:focus { border-color: #f59e42;}
+.theme-card.professional .theme-ai-input:focus { border-color: #38bdf8;}
+
+.theme-generate-btn {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 0.48em 1em;
+  font-size: 1.02rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.2s;
+}
+.theme-card.disney .theme-generate-btn { background: #f59e42; color: #fff; }
+.theme-card.professional .theme-generate-btn { background: #38bdf8; color: #fff; }
+.theme-generate-btn:hover, .theme-generate-btn:focus { opacity: 0.94; transform: scale(1.04); }
+
+.theme-ai-output {
+  margin-top: 0.88rem;
+  background: #f9fafb;
+  color: #666;
+  border-radius: 8px;
+  padding: 0.79em 1.1em;
+  min-height: 54px;
+  font-family: 'Fira Mono', 'Menlo', monospace;
+  font-size: 0.95em;
+  overflow-x: auto;
+  white-space: pre-line;
+}
+
