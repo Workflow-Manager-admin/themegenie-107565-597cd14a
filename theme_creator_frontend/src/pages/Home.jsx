@@ -3,21 +3,19 @@ import "./Home.css";
 
 // PUBLIC_INTERFACE
 function Home() {
-  /** Home page with intro and scroll-animated 3D character placeholder. */
+  /** Home page with intro, WHAT WE DO section, and scroll-animated 3D character. */
   const charRef = useRef(null);
 
-  // On scroll, move "3D" character placeholder up/down in a fun way
+  // Parallax effect for 3D character
   useEffect(() => {
     const handleScroll = () => {
       if (charRef.current) {
-        // Simple parallax effect - moves with scroll
         const scrollY = window.scrollY;
         charRef.current.style.transform = `translateY(${scrollY * 0.3}px) rotateY(${
-          (scrollY % 360)
+          scrollY % 360
         }deg)`;
       }
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -28,10 +26,27 @@ function Home() {
         <h1>
           Welcome to <span className="home__brand">Theme Creator</span>!
         </h1>
-        <p>
-          Build <b>fun</b>, <b>personalized themes</b> in awesome anime, Disney, or professional styles — powered by <span style={{ color: "#4f46e5" }}>AI</span>! 
-          Enjoy a playful, modern, and minimal site that makes theme creation a breeze.
-        </p>
+        <div style={{
+          margin: "1.5em 0 0.8em 0",
+          textAlign: "left"
+        }}>
+          <h2 style={{
+            fontSize: "2rem",
+            fontWeight: 800,
+            marginBottom: "0.5rem",
+            color: "#4f46e5",
+            letterSpacing: "0.5px"
+          }}>
+            What We Do
+          </h2>
+          <div style={{ color: "#222", fontSize: "1.1em", lineHeight: "1.7", maxWidth: "700px" }}>
+            Theme Creator lets anyone instantly generate <strong>unique website themes</strong>—Anime, Disney, or Professional styles—by just describing your idea.
+            <br /><br />
+            Powered by <span style={{ color: "#ec4899", fontWeight: 700 }}>AI</span>, your chosen style comes to life with ready-to-use HTML, CSS, and JS code.
+            <br />
+            No design skills or coding expertise needed. Create, preview, and bring your web vision to life, all in a playful and modern interface!
+          </div>
+        </div>
       </section>
       <section className="home__character-section">
         <h2 className="home__character-title">
