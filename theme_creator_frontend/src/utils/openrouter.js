@@ -14,10 +14,13 @@
  * // The result string will include three blocks labeled ---HTML---, ---CSS---, ---JS---
  */
 
-// API KEY should be sourced from the environment for security.
-// In React create-react-app, you must prefix with REACT_APP_ to expose to frontend.
+/**
+ * API KEY is sourced only from the environment for security.
+ * In React create-react-app, you must prefix with REACT_APP_ to expose to frontend.
+ */
 const OPENROUTER_KEY = process.env.REACT_APP_OPENROUTER_KEY;
-console.log("API KEY:", OPENROUTER_KEY); // Debug print for env configuration
+// Debug: Uncomment if you want to verify env variable, but remove in production
+// console.log("OpenRouter API KEY detected:", OPENROUTER_KEY);
 
 // PUBLIC_INTERFACE
 export async function generateThemeCode(theme, idea) {
