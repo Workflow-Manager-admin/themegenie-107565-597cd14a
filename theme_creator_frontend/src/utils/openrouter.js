@@ -1,5 +1,5 @@
-//
-// OpenRouter Gemini API Utility for Code Generation
+// 
+// OpenRouter Gemini API Utility for Theme Code Generation
 //
 
 // PUBLIC_INTERFACE
@@ -8,36 +8,38 @@
  * @param {string} theme - Theme style for code generation ("Anime", "Disney", etc.)
  * @param {string} idea - User's creative site/app idea or description.
  * @returns {Promise<string>} - The raw response string from the model (to be parsed client-side).
+ *
+ * Usage in React:
+ * import { generateThemeCode } from "../utils/openrouter";
+ * const result = await generateThemeCode("Anime", "portfolio for a chef");
+ * // The result string will include three blocks labeled ---HTML---, ---CSS---, ---JS---
  */
 export async function generateThemeCode(theme, idea) {
-  // Edit your OpenRouter API key here or better yet: move to .env and import it
-  const OPENROUTER_API_KEY = ""; // e.g., "your-openrouter-key", ideally set via env
+  // You should move this API key to an environment variable (.env), e.g., REACT_APP_OPENROUTER_KEY, in production
+  // For demo/testing, we include it here as requested.
+  const OPENROUTER_API_KEY = "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";
 
   if (!OPENROUTER_API_KEY) {
-    // Fail fast for missing key
     return "❌ Error: OpenRouter API key not set in openrouter.js.";
   }
 
-  // Gemini-1.5 Pro OpenRouter endpoint (more at https://openrouter.ai/docs)
   const endpoint = "https://openrouter.ai/api/v1/chat/completions";
-  const prompt = `
-Return code for a complete responsive ${theme} website/app implementing the user's idea: "${idea}".
-Respond in three blocks.
+  const prompt = `You're a frontend web developer AI. Build a "${theme}"-style website based on: "${idea}"
+
+Respond in this exact format:
 ---HTML---
 <html>...</html>
 ---CSS---
 <style>...</style>
 ---JS---
-<script>...</script>
-No extra explanation.
-`;
+<script>...</script>`;
 
   const body = {
-    model: "google/gemini-pro", // OpenRouter Gemini endpoint
+    model: "google/gemini-pro",
     messages: [
       {
         role: "system",
-        content: "You are an expert AI front-end developer. Respond only with usable code blocks, never with prose or text.",
+        content: "You are a helpful frontend AI.",
       },
       {
         role: "user",
@@ -51,7 +53,7 @@ No extra explanation.
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer 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",
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       },
       body: JSON.stringify(body),
     });
@@ -66,9 +68,19 @@ No extra explanation.
       data?.choices?.[0]?.message?.content ||
       data?.choices?.[0]?.text ||
       "No code returned.";
-
     return text;
   } catch (err) {
     return "❌ Network error: " + err.message;
   }
 }
+
+/**
+ * Usage in a React component (example):
+ *
+ * import { generateThemeCode } from "../utils/openrouter";
+ * // Inside a handler:
+ * const code = await generateThemeCode(theme, idea);
+ * // You can then parse the code string for ---HTML---, ---CSS---, ---JS--- sections.
+ *
+ * // See src/pages/CodeLab.jsx for full integration details with parsing and display.
+ */
