@@ -18,8 +18,8 @@ function Navbar() {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/themes" className="navbar__link">
-            Themes
+          <NavLink to="/codelab" className="navbar__link">
+            CodeLab
           </NavLink>
         </li>
         <li>

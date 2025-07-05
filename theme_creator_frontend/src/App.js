@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Themes from "./pages/Themes";
+import CodeLab from "./pages/CodeLab";
 import ContactUs from "./pages/ContactUs";
 import "./App.css";
 
@@ -34,7 +34,7 @@ function App() {
         <div className="app-main-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/themes" element={<Themes />} />
+            <Route path="/codelab" element={<CodeLab />} />
             <Route path="/contact" element={<ContactUs />} />
           </Routes>
         </div>

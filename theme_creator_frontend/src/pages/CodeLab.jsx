@@ -139,19 +139,19 @@ function ThemeChatCard({ themeKey, title, desc, accentClass }) {
 }
 
 // PUBLIC_INTERFACE
-function Themes() {
+function CodeLab() {
   /**
-   * Themes page with three fully interactive, themed chatbot cards (Anime, Disney, Professional).
+   * CodeLab page with three fully interactive, themed chatbot cards (Anime, Disney, Professional).
    * Each card is self-contained, styled, and updates output with generateThemeCode().
    * Responsive, fun, and colorful layout.
    */
   return (
     <main className="themes-page-main">
       <h1 style={{ marginBottom: "0.2em", fontWeight: 900, letterSpacing: 2 }}>
-        Explore Themes
+        Explore CodeLab
       </h1>
       <p style={{ color: "#4f46e5", fontSize: "1.09em", margin: 0 }}>
-        Choose your style and try AI theme generator!
+        Choose your style and try AI code generator!
       </p>
       <div className="themes-grid">
         <ThemeChatCard
@@ -184,11 +184,11 @@ function Themes() {
             fontSize: "1.08rem",
           }}
         >
-          Custom themes &amp; AI-powered style generator launching soon!
+          Custom themes &amp; AI-powered code generator launching soon!
         </div>
       </div>
     </main>
   );
 }
 
-export default Themes;
+export default CodeLab;
