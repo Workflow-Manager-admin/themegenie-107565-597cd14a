@@ -1,56 +1,52 @@
 //
-// Gemini API helper for code generation
+// Gemini API helper for code generation - new "generateThemeCode" implementation
 //
 
 // PUBLIC_INTERFACE
 /**
- * Generate code for a given theme and idea by calling the Gemini API.
- * @param {string} theme - Theme style for generation (e.g., "Anime", "Disney", "Professional", etc)
- * @param {string} idea - User's description or idea for the site/code.
- * @returns {Promise<string>} Generated code as a string, or error message
+ * Generates site code (HTML, CSS, JS) for a given theme + idea using the new Gemini API.
+ * @param {string} theme - Theme style for code generation.
+ * @param {string} idea - User's creative idea/description.
+ * @param {function} setResult - Callback to set the generated result (string).
+ * @returns {Promise<void>}
  */
-export async function generateCode(theme, idea) {
-  /** Uses Gemini API to generate code based on theme and idea. */
+export async function generateThemeCode(theme, idea, setResult) {
   const prompt = `
-You are an expert web developer specializing in modern HTML, CSS, and JavaScript.
-Generate a complete, minimal, and creative single-file web code based on the following theme and description.
-Respond ONLY with pure code (no commentary).
+Return THREE blocks:
 
-Theme: ${theme}
-Description: ${idea}
+---HTML---
+<full html>
 
-Requirements:
-- Use <html>, <head>, <style>, and <body>.
-- Styles: Incorporate personality of the theme (e.g., anime, disney, professional).
-- Add expressive headings, color, and minimal graphics if fits the theme.
-- All code should be in a SINGLE HTML file.
-`;
+---CSS---
+<full css>
+
+---JS---
+<full js>
+
+Theme: ${theme}. Idea: ${idea}. Responsive. No extra words.
+  `;
 
   try {
-    // (Replace with appropriate Gemini API endpoint/headers for your environment)
-    const response = await fetch("https://generativeai.googleapis.com/v1beta/models/gemini-pro:generateContent?key=YOUR_GEMINI_API_KEY", {
+    const response = await fetch("https://gemini-2-5-pro.p.rapidapi.com/", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "content-type": "application/json",
+        "X-RapidAPI-Key": "634766b73bmsh0a7fe01b023896ep1fa5d9jsn10ea21f3f7a7",
+        "X-RapidAPI-Host": "gemini-2-5-pro.p.rapidapi.com"
       },
-      body: JSON.stringify({
-        contents: [{
-          role: "user",
-          parts: [{ text: prompt }]
-        }]
-      })
+      body: JSON.stringify({ prompt })
+      // mode: "cors"  // optional, default is fine
     });
 
-    if (!response.ok) {
-      throw new Error(`Gemini API error (${response.status}): ${response.statusText}`);
-    }
     const data = await response.json();
-    // The Gemini API returns generated code inside the 'candidates[0].content.parts[0].text'
-    const code =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "// Error: Unable to parse Gemini response.";
-    return code;
+    const text =
+      data.generatedContent ||
+      data.choices?.[0]?.message?.content ||
+      "No content returned.";
+
+    setResult(text);
   } catch (err) {
-    return `// Gemini API Error: ${err.message}`;
+    console.error(err);
+    setResult("\u274C Error: " + err.message);
   }
 }

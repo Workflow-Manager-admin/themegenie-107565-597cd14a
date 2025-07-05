@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../pages/Themes.css";
-import { generateCode } from "../utils/gemini";
+import { generateThemeCode } from "../utils/gemini";
 
 // PUBLIC_INTERFACE
 /**
@@ -45,22 +45,18 @@ function CodeLab() {
   }
 
   // PUBLIC_INTERFACE
-  async function handleGenerate(e) {
+  function handleGenerate(e) {
     e.preventDefault();
     setLoading(true);
     setOutputs({ html: "", css: "", js: "" });
     setRaw("");
-    try {
-      const code = await generateCode(theme, idea);
+    generateThemeCode(theme, idea, (code) => {
+      // "code" is a string returned by the Gemini API or error message
       const sections = parseCodeSections(code);
       setOutputs(sections);
       setRaw(code);
-    } catch (err) {
-      setOutputs({ html: "", css: "", js: "" });
-      setRaw("// Error: " + String(err));
-    } finally {
       setLoading(false);
-    }
+    });
   }
 
   // For accent colors, find current selected theme
