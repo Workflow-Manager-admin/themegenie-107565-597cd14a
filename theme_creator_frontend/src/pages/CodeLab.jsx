@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import "../pages/Themes.css";
-import { generateThemeCode } from "../utils/gemini";
+import { generateThemeCode } from "../utils/openrouter";
 
 // PUBLIC_INTERFACE
 /**
- * CodeLab page: Gemini-powered code generation with theme dropdown,
+ * CodeLab page: Modern AI-powered code generation with theme dropdown,
  * idea input, and colorfully styled, responsive output for HTML, CSS, JS.
  */
 function CodeLab() {
@@ -17,46 +17,54 @@ function CodeLab() {
   const [idea, setIdea] = useState("");
   const [loading, setLoading] = useState(false);
   const [outputs, setOutputs] = useState({ html: "", css: "", js: "" });
-  const [raw, setRaw] = useState(""); // For debugging, shows full Gemini response
+  const [raw, setRaw] = useState(""); // For debugging, shows full Gemini/OpenRouter response
 
-  // Extract HTML, CSS, JS from a multi-part code string.
+  // Extract HTML, CSS, JS from a multi-part code string from OpenRouter Gemini
   function parseCodeSections(code) {
-    // Quick and robust way: regex split for <style>...</style> and <script>...</script>
     if (!code) return { html: "", css: "", js: "" };
     let html = "", css = "", js = "";
 
-    // Regexes for <style>...</style> and <script>...</script>
-    const styleMatch = code.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
-    const scriptMatch = code.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+    // Primary mode: ---HTML---, ---CSS---, ---JS--- blocks
+    const htmlMatch = code.match(/---HTML---([\s\S]*?)(?=(---CSS---|---JS---|$))/i);
+    const cssMatch = code.match(/---CSS---([\s\S]*?)(?=(---JS---|$))/i);
+    const jsMatch = code.match(/---JS---([\s\S]*)/i);
 
-    if (styleMatch) css = styleMatch[1].trim();
-    if (scriptMatch) js = scriptMatch[1].trim();
+    if (htmlMatch) html = htmlMatch[1].trim();
+    if (cssMatch) css = cssMatch[1].replace(/<\/?style[^>]*>/gi, "").trim();
+    if (jsMatch) js = jsMatch[1].replace(/<\/?script[^>]*>/gi, "").trim();
 
-    // Strip <style> and <script> from html
-    html = code
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-      .trim();
+    // Fallback: legacy code with <style> and <script>
+    if (!html && !css && !js && code) {
+      const legacyStyleMatch = code.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+      const legacyScriptMatch = code.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
 
-    // Gemini often returns everything as one <html>...</html>: keep just the <html> if present, else the whole.
-    const htmlBlockMatch = html.match(/(<html[\s\S]*<\/html>)/i);
-    if (htmlBlockMatch) html = htmlBlockMatch[1];
+      if (legacyStyleMatch) css = legacyStyleMatch[1].trim();
+      if (legacyScriptMatch) js = legacyScriptMatch[1].trim();
+
+      html = code
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+        .trim();
+
+      const htmlBlockMatch = html.match(/(<html[\s\S]*<\/html>)/i);
+      if (htmlBlockMatch) html = htmlBlockMatch[1];
+    }
+
     return { html, css, js };
   }
 
   // PUBLIC_INTERFACE
-  function handleGenerate(e) {
+  async function handleGenerate(e) {
     e.preventDefault();
     setLoading(true);
     setOutputs({ html: "", css: "", js: "" });
     setRaw("");
-    generateThemeCode(theme, idea, (code) => {
-      // "code" is a string returned by the Gemini API or error message
-      const sections = parseCodeSections(code);
-      setOutputs(sections);
-      setRaw(code);
-      setLoading(false);
-    });
+    // Use OpenRouter Gemini API utility for code generation
+    const code = await generateThemeCode(theme, idea);
+    const sections = parseCodeSections(code);
+    setOutputs(sections);
+    setRaw(code);
+    setLoading(false);
   }
 
   // For accent colors, find current selected theme
@@ -185,7 +193,6 @@ function CodeLab() {
 
         <ResponsivePreviewOutputs outputs={outputs} accent={currentThemeObj.accent} />
 
-        {/* Debug raw Gemini output, can be removed. */}
         {/* <textarea style={{display: "none"}} value={raw} readOnly rows={4} /> */}
 
         <div style={{
@@ -203,7 +210,6 @@ function CodeLab() {
 
 // Responsive component to display three labeled output boxes for HTML, CSS, JS.
 function ResponsivePreviewOutputs({ outputs, accent }) {
-  // Responsive: stack in one column on mobile, otherwise grid
   return (
     <section style={{
       display: "grid",
