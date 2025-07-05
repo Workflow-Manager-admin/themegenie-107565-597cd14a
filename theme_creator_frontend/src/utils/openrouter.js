@@ -51,7 +51,7 @@ No extra explanation.
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        Authorization: "Bearer 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",
       },
       body: JSON.stringify(body),
     });
