@@ -4,23 +4,36 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import "./ParallaxHome.css";
 
+// IMPORTANT: The preload call must be outside of any component body
+useGLTF.preload("/assets/toothless.glb");
+
 const panelBackground = {
   background: `url(${process.env.PUBLIC_URL}/webbg1.png) center / cover fixed`,
   color: "#fff"
 };
 
-/* 3‑D Toothless component */
+/**
+ * PUBLIC_INTERFACE
+ * 3D Toothless model (glTF). Used inside react-three/fiber <Canvas>.
+ */
 function Toothless({ y }) {
   const { scene } = useGLTF("/assets/toothless.glb");
   const ref = useRef();
   useFrame(() => {
     // simple floating animation
-    ref.current.rotation.y += 0.005;
-    ref.current.position.x = Math.sin(Date.now() * 0.0005) * 2;
+    if (ref.current) {
+      ref.current.rotation.y += 0.005;
+      ref.current.position.x = Math.sin(Date.now() * 0.0005) * 2;
+    }
   });
+  // NOTE: <primitive /> is valid as Canvas child; do not wrap as object/function call.
   return <primitive ref={ref} object={scene} scale={0.8} position={[0, y, 0]} />;
 }
 
+// PUBLIC_INTERFACE
+/**
+ * ParallaxHome page with animated 3D model for all three theme panels.
+ */
 export default function ParallaxHome() {
   return (
     <div className="parallax-wrapper">
@@ -40,6 +53,7 @@ export default function ParallaxHome() {
         <Canvas className="model">
           <ambientLight />
           <directionalLight position={[2, 2, 2]} />
+          {/* Only use as <Toothless /> not Toothless() */}
           <Toothless y={0} />
         </Canvas>
       </section>
@@ -68,6 +82,3 @@ export default function ParallaxHome() {
     </div>
   );
 }
-
-/* allow drei to cache model */
-useGLTF.preload("/assets/toothless.glb");
