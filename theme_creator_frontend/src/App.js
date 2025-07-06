@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import ParallaxHome from "./pages/ParallaxHome";
 import Home from "./pages/Home";
 import CodeLab from "./pages/CodeLab";
 import ContactUs from "./pages/ContactUs";
@@ -33,7 +34,7 @@ function App() {
         {/* Apply a global padding top to main content, matching the Navbar height */}
         <div className="app-main-content">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<ParallaxHome />} />
             <Route path="/codelab" element={<CodeLab />} />
             <Route path="/contact" element={<ContactUs />} />
           </Routes>
