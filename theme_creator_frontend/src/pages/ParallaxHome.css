@@ -1,3 +1,155 @@
+/* --- Parallax HTML Hero (fullscreen custom CSS, converted from SCSS/Compass) --- */
+
+/* Container sets up 3D perspective and disables scroll-overlap issues */
+.parallax_container {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  min-height: 420px;
+  overflow: hidden;
+  perspective: 1px; /* Used in demo by compass, but most modern effects don't require actual 3D perspective here */
+  perspective-origin: center center;
+  background: #23272a;
+  box-shadow: 0 6px 44px 0 #1a1a1a15;
+}
+
+/* Each parallax_layer is absolutely positioned on top of each other */
+.parallax_layer {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  will-change: transform;
+  /* Parallax effect is handled in JS – do not use background-attachment: fixed for mobile compatibility */
+}
+
+/* Farthest BG */
+.parallax_bg {
+  z-index: 0;
+  opacity: 1;
+  filter: brightness(0.87) saturate(1.1);
+  /* Most distant, slowest movement */
+  transition: filter 0.34s;
+}
+
+/* Middle layer: cloud image & blend effect */
+.parallax_cloud {
+  z-index: 1;
+  opacity: 0.75;
+  background-position: top right;
+  background-size: 55vw 38vh;
+  filter: blur(2px) contrast(1.1);
+  transition: filter 0.36s;
+}
+
+/* Mountain, closer */
+.parallax_mountain {
+  z-index: 2;
+  opacity: 0.93;
+  background-position: bottom center;
+  background-size: 110vw 60vh;
+  filter: brightness(1.07) blur(0.7px);
+  transition: filter 0.20s;
+}
+
+/* Hero content always overlay, highest z-index */
+.parallax_hero {
+  z-index: 3;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* allow scroll interactions through */
+}
+.parallax_hero .hero-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 7vh;
+  width: 100%;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(20,20,30,0.11), 0 1px 5px #0002;
+  font-family: "Nunito", "Segoe UI", Arial, sans-serif;
+  pointer-events: auto; /* allow buttons/links */
+}
+.parallax_hero h1 {
+  font-size: 3.2rem;
+  font-weight: 900;
+  margin-bottom: 1.7rem;
+  letter-spacing: 1.2px;
+  text-align: center;
+}
+.parallax_hero p {
+  font-size: 1.38rem;
+  font-weight: 500;
+  line-height: 1.38;
+  color: #fefefe;
+  margin-bottom: 2.2rem;
+}
+.hero-btn {
+  display: inline-block;
+  font-size: 1.22rem;
+  font-weight: 800;
+  padding: 0.7em 2.1em;
+  color: #fff;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(90deg,#7c3aed,#f472b6,#4f46e5 90%);
+  box-shadow: 0 4px 22px rgba(79,70,229,0.22);
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+  transition: background 0.27s, box-shadow 0.21s, transform 0.16s;
+  margin-bottom: 1.5rem;
+  pointer-events: auto;
+}
+.hero-btn:hover, .hero-btn:focus {
+  background: linear-gradient(90deg,#fbcfe8 30%,#7c3aed 100%);
+  opacity: 0.92;
+  transform: scale(1.035);
+}
+
+/* Responsive: stack hero smaller, mobile touch zone for button */
+@media (max-width: 800px) {
+  .parallax_hero h1 { font-size: 2.1rem;}
+  .parallax_hero p { font-size: 1.04rem;}
+  .hero-btn { font-size: 1.03rem; padding: 0.62em 1.3em;}
+}
+
+/* Footer image credits (as requested) */
+.image-credits {
+  color: #dbdbdb;
+  font-size: 1em;
+  line-height: 1.4;
+  text-align: center;
+  background: rgba(32,32,34,0.22);
+  margin: 0 auto 0 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  z-index: 4;
+  font-family: "Nunito", "Segoe UI", Arial, sans-serif;
+  pointer-events: auto;
+  padding: 0.18em 4vw 0.15em 4vw;
+  /* 
+    Don't remove attribution for demo/review!
+    Mountain: Sean Pierce/Unsplash. Cloud: pngimg.com.
+    Mountain illust: pixabay.com/CC0.
+  */
+}
+
+/* --- End Parallax HTML Hero CSS --- */
+
+/* --- Retain previous ParallaxHome styles for scroll panels and animated SVG shapes --- */
+
 /* Full‑screen parallax layout */
 .parallax-wrapper {
   width: 100%;

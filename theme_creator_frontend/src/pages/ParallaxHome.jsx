@@ -2,6 +2,101 @@ import React, { useEffect, useRef } from "react";
 import "./ParallaxHome.css";
 
 /**
+ * Parallax HTML Hero (Fullscreen, layered, pure JSX version)
+ * Layered, scroll-based effect that mimics old CSS/Compass SASS versions.
+ * 
+ * Image credits/footer as per original demo – injected at hero bottom.
+ */
+function ParallaxHTMLHero() {
+  // Refs for JS-driven parallax effect
+  const containerRef = useRef();
+  const layers = [useRef(), useRef(), useRef(), useRef()];
+
+  useEffect(() => {
+    // Parallax scroll logic (matches typical SASS/CSS+Compass approaches)
+    function handleScroll() {
+      const scrollY = window.scrollY || window.pageYOffset;
+      // Layer speeds (closer = faster)
+      layers[0].current &&
+        (layers[0].current.style.transform = `translateY(${scrollY * 0.1}px) scale(1.06)`);
+      layers[1].current &&
+        (layers[1].current.style.transform = `translateY(${scrollY * 0.25}px) scale(1.13)`);
+      layers[2].current &&
+        (layers[2].current.style.transform = `translateY(${scrollY * 0.48}px) scale(1.2)`);
+      // Foreground (text/buttons): sticky, doesn’t move with parallax
+      layers[3].current &&
+        (layers[3].current.style.transform = `translateY(${scrollY * 0.0}px)`);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    requestAnimationFrame(handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <div className="parallax_container" ref={containerRef}>
+      {/* Layered backgrounds – lower index = farther back */}
+      <div
+        className="parallax_layer parallax_bg"
+        ref={layers[0]}
+        aria-hidden="true"
+        style={{
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80)",
+        }}
+      />
+      <div
+        className="parallax_layer parallax_cloud"
+        ref={layers[1]}
+        aria-hidden="true"
+        style={{
+          backgroundImage:
+            "url(https://pngimg.com/uploads/cloud/cloud_PNG17.png)",
+        }}
+      />
+      <div
+        className="parallax_layer parallax_mountain"
+        ref={layers[2]}
+        aria-hidden="true"
+        style={{
+          backgroundImage:
+            "url(https://cdn.pixabay.com/photo/2017/01/20/00/30/mountains-1993088_1280.png)",
+        }}
+      />
+      {/* Hero headline & button in foreground layer */}
+      <div className="parallax_layer parallax_hero" ref={layers[3]}>
+        <div className="hero-content">
+          <h1>
+            <span role="img" aria-label="genie">🧞‍♂️</span> Theme Creator
+          </h1>
+          <p>
+            Effortless theme generation.<br />
+            <span style={{ color: "#ec4899", fontWeight: 600 }}>Anime</span>, <span style={{ color: "#f59e42", fontWeight: 600 }}>Disney</span> or <span style={{ color: "#1e293b", fontWeight: 600 }}>Professional</span> – powered by AI.
+          </p>
+          <a
+            href="#howitworks"
+            className="hero-btn"
+          >
+            Try Now
+          </a>
+        </div>
+        {/* Image credits, as per provided HTML – always after the hero */}
+        {/* 
+          <!-- Image credits: Unsplash + Pixabay, required for demo use only -->
+          <footer class="image-credits">
+            Mountain: Photo by Sean Pierce on Unsplash. Cloud: pngimg.com. 
+            Mountain illustration: pixabay.com (CC0).
+          </footer>
+        */}
+        {/* Image credits/footer (do not remove attribution for demo use) */}
+        <footer className="image-credits">
+          Mountain: Photo by Sean Pierce on Unsplash. Cloud: pngimg.com. Mountain illustration: pixabay.com (CC0).
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+/**
  * ParallaxShapes – Animated, interactive, themed parallax layers for each theme panel
  * React useRef/useEffect for scroll+hover motion, SVG/CSS for visuals, well-documented for customization
  */
@@ -305,8 +400,7 @@ function ParallaxShapes({ theme }) {
 }
 
 /**
- * ParallaxHome – Themed full-page parallax panels with animated, interactive, and layered backgrounds
- * Explains logic for further customization in comments.
+ * ParallaxHome – Combines the injected HTML-based hero and themed parallax sections below.
  */
 // PUBLIC_INTERFACE
 export default function ParallaxHome() {
@@ -348,130 +442,134 @@ export default function ParallaxHome() {
   ];
 
   return (
-    <div className="parallax-wrapper" style={{ background: "#fefafd", position: "relative" }}>
-      {/* SECTION 0 – About/intro (no parallax shapes, but uses a static SVG for branding) */}
-      <section
-        className="panel"
-        style={{
-          ...sections[0].background,
-          position: "relative",
-          zIndex: 1
-        }}
-      >
-        <h1>{sections[0].heading}</h1>
-        <p>{sections[0].description}</p>
-        {/* Subtle brand SVG motif */}
-        <svg width="78" height="78" style={{ marginTop: 26 }}>
-          <ellipse cx="39" cy="46" rx="31" ry="14" fill="#fbbf24" opacity="0.22" />
-          <circle cx="39" cy="34" r="22" fill="#4f46e5" />
-          <ellipse cx="39" cy="57" rx="20" ry="8" fill="#ec4899" opacity="0.48" />
-        </svg>
-      </section>
-      {/* Animated theme panels with interactive layered parallax */}
-      {sections.slice(1).map((panel) => (
+    <React.Fragment>
+      {/* Injected parallax HTML hero (fullscreen, above themed panels) */}
+      <ParallaxHTMLHero />
+      {/* The themed scroll panels (legacy ParallaxHome content) – for demo, leave below hero */}
+      <div className="parallax-wrapper" style={{ background: "#fefafd", position: "relative" }}>
+        {/* SECTION 0 – About/intro (no parallax shapes, but uses a static SVG for branding) */}
         <section
-          key={panel.key}
           className="panel"
           style={{
+            ...sections[0].background,
             position: "relative",
-            background: "none",
-            color: "#282c34",
-            overflow: "hidden"
+            zIndex: 1
           }}
         >
-          {/* Themed, interactive parallax background */}
-          <ParallaxShapes theme={panel.theme} />
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2 style={{
-              color: panel.theme === "anime"
-                ? "#7c3aed"
-                : panel.theme === "disney"
-                  ? "#f59e42"
-                  : "#1e293b"
-            }}>{panel.heading}</h2>
-            <p>{panel.description}</p>
-            {/* Animated theme mascot illustration (SVG, static, but visually expressive) */}
-            {panel.theme === "anime" && (
-              <div style={{ margin: "1.5rem auto 0 auto", width: 110, filter: "drop-shadow(0 7px 19px #fbcfe87c)" }}>
-                <svg width="110" height="115" viewBox="0 0 110 115">
-                  <ellipse cx="55" cy="109" rx="37" ry="7.7" fill="#fbcfe8" />
-                  <ellipse cx="55" cy="64" rx="38" ry="36" fill="#7c3aed" />
-                  <ellipse cx="33" cy="56" rx="7" ry="11" fill="#fff" />
-                  <ellipse cx="77" cy="56" rx="7" ry="11" fill="#fff" />
-                  <circle cx="38" cy="61" r="2.7" fill="#282c34" />
-                  <circle cx="72" cy="61" r="2.7" fill="#282c34" />
-                  <ellipse cx="55" cy="80" rx="14" ry="8" fill="#fff" />
-                  <ellipse cx="55" cy="85" rx="7" ry="2" fill="#282c34" />
-                  {/* Manga sparkles */}
-                  <circle cx="26" cy="44" r="2" fill="#fbcfe8" />
-                  <circle cx="84" cy="44" r="2" fill="#fbcfe8" />
-                </svg>
-                <div style={{ color: "#7c3aed", fontWeight: 700, fontSize: 15, marginTop: 2 }}>Manga Mascot</div>
-              </div>
-            )}
-            {panel.theme === "disney" && (
-              <div style={{ margin: "1.5rem auto 0 auto", width: 110, filter: "drop-shadow(0 4px 14px #f59e4291)" }}>
-                <svg width="110" height="115" viewBox="0 0 110 115">
-                  <ellipse cx="55" cy="109" rx="37" ry="7.7" fill="#dbeafe" />
-                  <ellipse cx="55" cy="60" rx="37" ry="35" fill="#f59e42" />
-                  <ellipse cx="39" cy="54" rx="8.5" ry="13" fill="#fff" />
-                  <ellipse cx="71" cy="54" rx="8.5" ry="13" fill="#fff" />
-                  <circle cx="44" cy="62" r="3.4" fill="#333cff" />
-                  <circle cx="66" cy="62" r="3.4" fill="#333cff" />
-                  {/* nose */}
-                  <ellipse cx="55" cy="75" rx="10" ry="4" fill="#fff" />
-                  {/* smile */}
-                  <path d="M46 81 q9 7 18 0" stroke="#ec4899" strokeWidth="2" fill="none" />
-                  {/* star sparkle (theme motif) */}
-                  <polygon points="24,34 26,40 32,41 27.5,44.5 29.5,50 24,46.5 18.5,50 20.5,44.5 16,41 22,40" fill="#fef3c7" />
-                  <polygon points="96,34 98,40 104,41 99.5,44.5 101.5,50 96,46.5 90.5,50 92.5,44.5 88,41 94,40" fill="#fef3c7" />
-                </svg>
-                <div style={{ color: "#f59e42", fontWeight: 700, fontSize: 15, marginTop: 2 }}>
-                  Magical Mouse
-                </div>
-              </div>
-            )}
-            {panel.theme === "professional" && (
-              <div style={{ margin: "1.5rem auto 0 auto", width: 110, filter: "drop-shadow(0 4px 12px #1e293b44)" }}>
-                <svg width="110" height="115" viewBox="0 0 110 115">
-                  <ellipse cx="55" cy="109" rx="37" ry="7.7" fill="#94a3b8" opacity="0.3"/>
-                  <ellipse cx="55" cy="60" rx="36" ry="32" fill="#1e293b" opacity="0.88"/>
-                  <ellipse cx="43" cy="53" rx="6" ry="10" fill="#fff" />
-                  <ellipse cx="67" cy="53" rx="6" ry="10" fill="#fff" />
-                  <circle cx="47" cy="58" r="2.7" fill="#38bdf8" />
-                  <circle cx="63" cy="58" r="2.7" fill="#38bdf8" />
-                  <ellipse cx="55" cy="75" rx="11" ry="5.3" fill="#fff" />
-                  <ellipse cx="55" cy="81" rx="6" ry="1.7" fill="#282c34" />
-                  {/* Glasses */}
-                  <ellipse cx="43" cy="53" rx="8" ry="10" fill="none" stroke="#38bdf8" strokeWidth="2"/>
-                  <ellipse cx="67" cy="53" rx="8" ry="10" fill="none" stroke="#38bdf8" strokeWidth="2"/>
-                  <rect x="50" y="53" width="10" height="2.2" fill="#38bdf8" opacity="0.59"/>
-                </svg>
-                <div style={{ color: "#1e293b", fontWeight: 700, fontSize: 15, marginTop: 2 }}>
-                  Pro Mascot
-                </div>
-              </div>
-            )}
-          </div>
+          <h1>{sections[0].heading}</h1>
+          <p>{sections[0].description}</p>
+          {/* Subtle brand SVG motif */}
+          <svg width="78" height="78" style={{ marginTop: 26 }}>
+            <ellipse cx="39" cy="46" rx="31" ry="14" fill="#fbbf24" opacity="0.22" />
+            <circle cx="39" cy="34" r="22" fill="#4f46e5" />
+            <ellipse cx="39" cy="57" rx="20" ry="8" fill="#ec4899" opacity="0.48" />
+          </svg>
         </section>
-      ))}
-    </div>
+        {/* Animated theme panels with interactive layered parallax */}
+        {sections.slice(1).map((panel) => (
+          <section
+            key={panel.key}
+            className="panel"
+            style={{
+              position: "relative",
+              background: "none",
+              color: "#282c34",
+              overflow: "hidden"
+            }}
+          >
+            {/* Themed, interactive parallax background */}
+            <ParallaxShapes theme={panel.theme} />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <h2 style={{
+                color: panel.theme === "anime"
+                  ? "#7c3aed"
+                  : panel.theme === "disney"
+                    ? "#f59e42"
+                    : "#1e293b"
+              }}>{panel.heading}</h2>
+              <p>{panel.description}</p>
+              {/* Animated theme mascot illustration (SVG, static, but visually expressive) */}
+              {panel.theme === "anime" && (
+                <div style={{ margin: "1.5rem auto 0 auto", width: 110, filter: "drop-shadow(0 7px 19px #fbcfe87c)" }}>
+                  <svg width="110" height="115" viewBox="0 0 110 115">
+                    <ellipse cx="55" cy="109" rx="37" ry="7.7" fill="#fbcfe8" />
+                    <ellipse cx="55" cy="64" rx="38" ry="36" fill="#7c3aed" />
+                    <ellipse cx="33" cy="56" rx="7" ry="11" fill="#fff" />
+                    <ellipse cx="77" cy="56" rx="7" ry="11" fill="#fff" />
+                    <circle cx="38" cy="61" r="2.7" fill="#282c34" />
+                    <circle cx="72" cy="61" r="2.7" fill="#282c34" />
+                    <ellipse cx="55" cy="80" rx="14" ry="8" fill="#fff" />
+                    <ellipse cx="55" cy="85" rx="7" ry="2" fill="#282c34" />
+                    {/* Manga sparkles */}
+                    <circle cx="26" cy="44" r="2" fill="#fbcfe8" />
+                    <circle cx="84" cy="44" r="2" fill="#fbcfe8" />
+                  </svg>
+                  <div style={{ color: "#7c3aed", fontWeight: 700, fontSize: 15, marginTop: 2 }}>Manga Mascot</div>
+                </div>
+              )}
+              {panel.theme === "disney" && (
+                <div style={{ margin: "1.5rem auto 0 auto", width: 110, filter: "drop-shadow(0 4px 14px #f59e4291)" }}>
+                  <svg width="110" height="115" viewBox="0 0 110 115">
+                    <ellipse cx="55" cy="109" rx="37" ry="7.7" fill="#dbeafe" />
+                    <ellipse cx="55" cy="60" rx="37" ry="35" fill="#f59e42" />
+                    <ellipse cx="39" cy="54" rx="8.5" ry="13" fill="#fff" />
+                    <ellipse cx="71" cy="54" rx="8.5" ry="13" fill="#fff" />
+                    <circle cx="44" cy="62" r="3.4" fill="#333cff" />
+                    <circle cx="66" cy="62" r="3.4" fill="#333cff" />
+                    {/* nose */}
+                    <ellipse cx="55" cy="75" rx="10" ry="4" fill="#fff" />
+                    {/* smile */}
+                    <path d="M46 81 q9 7 18 0" stroke="#ec4899" strokeWidth="2" fill="none" />
+                    {/* star sparkle (theme motif) */}
+                    <polygon points="24,34 26,40 32,41 27.5,44.5 29.5,50 24,46.5 18.5,50 20.5,44.5 16,41 22,40" fill="#fef3c7" />
+                    <polygon points="96,34 98,40 104,41 99.5,44.5 101.5,50 96,46.5 90.5,50 92.5,44.5 88,41 94,40" fill="#fef3c7" />
+                  </svg>
+                  <div style={{ color: "#f59e42", fontWeight: 700, fontSize: 15, marginTop: 2 }}>
+                    Magical Mouse
+                  </div>
+                </div>
+              )}
+              {panel.theme === "professional" && (
+                <div style={{ margin: "1.5rem auto 0 auto", width: 110, filter: "drop-shadow(0 4px 12px #1e293b44)" }}>
+                  <svg width="110" height="115" viewBox="0 0 110 115">
+                    <ellipse cx="55" cy="109" rx="37" ry="7.7" fill="#94a3b8" opacity="0.3"/>
+                    <ellipse cx="55" cy="60" rx="36" ry="32" fill="#1e293b" opacity="0.88"/>
+                    <ellipse cx="43" cy="53" rx="6" ry="10" fill="#fff" />
+                    <ellipse cx="67" cy="53" rx="6" ry="10" fill="#fff" />
+                    <circle cx="47" cy="58" r="2.7" fill="#38bdf8" />
+                    <circle cx="63" cy="58" r="2.7" fill="#38bdf8" />
+                    <ellipse cx="55" cy="75" rx="11" ry="5.3" fill="#fff" />
+                    <ellipse cx="55" cy="81" rx="6" ry="1.7" fill="#282c34" />
+                    {/* Glasses */}
+                    <ellipse cx="43" cy="53" rx="8" ry="10" fill="none" stroke="#38bdf8" strokeWidth="2"/>
+                    <ellipse cx="67" cy="53" rx="8" ry="10" fill="none" stroke="#38bdf8" strokeWidth="2"/>
+                    <rect x="50" y="53" width="10" height="2.2" fill="#38bdf8" opacity="0.59"/>
+                  </svg>
+                  <div style={{ color: "#1e293b", fontWeight: 700, fontSize: 15, marginTop: 2 }}>
+                    Pro Mascot
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        ))}
+      </div>
+    </React.Fragment>
   );
 }
 
 /*
   --- Customization Documentation ---
 
+  ParallaxHTMLHero:
+    - Structure mirrors original HTML demo, with layered .parallax_layer divs for stacking.
+    - Each layer uses a remote image for background (URL preserved, not imported).
+    - The hero-content is sticky and overlays above parallax background/mountain/cloud.
+    - Buttons and layout adapt for mobile/fullscreen; credits must remain as footer.
+    - Parallax effect achieved via JS scroll event, moving layers at different rates (see useEffect logic).
+
   ParallaxShapes logic for each theme:
-  - Anime: Animates blobs & "sparkle star" with bounce and slide, using manga-inspired colors. Easily tweak bounce amplitude or swap SVG for dramatic/kawaii effect.
-  - Disney: Pastel cloud and round bubbles float gently, sparkle shape uses polygons/ellipses for soft playful feel. Change color stops or add more stars for extra Disney magic.
-  - Professional: Geometric polygons & accent color, subtle parallax and an interactive polygon sparkle that rotates on hover. You can swap the polygon for other geometric SVGs, or smooth the animation by adjusting rotation angles in the hover logic.
-
-  Animation: All motion is JavaScript-driven (requestAnimationFrame + scroll position) to synchronize with browser scroll for smooth effect.
-  For static effects (e.g. pulse), use SVG <animate> or CSS keyframes.
-
-  Advanced: To layer more objects (e.g. floating hearts, emoji, etc.), add more <svg> layers, refs, and animate them similarly in useEffect.
-  All colors/styles can be adjusted in theme colorSets object.
+    - As before, see detailed comments above for themed panel layers.
 
   --- End Documentation ---
 */
