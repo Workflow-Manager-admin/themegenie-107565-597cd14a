@@ -1,32 +1,45 @@
-/* full‑screen parallax */
+/* Full‑screen parallax layout */
 .parallax-wrapper {
   width: 100%;
-  height: 400vh;          /* 4 panels × 100vh */
+  height: 400vh; /* 4 panels × 100vh */
+  scroll-behavior: smooth;
 }
 
-/* each full‑viewport panel */
+/* Each full‑viewport panel */
 .panel {
   position: relative;
   height: 100vh;
   padding: 60px;
-  color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;  /* ✨ centers horizontally */
   text-align: center;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #fff;
 }
 
-/* title look */
+/* Headings */
 .panel h1,
 .panel h2 {
   margin-bottom: 12px;
   font-weight: 700;
+  font-size: 2.5rem;
 }
 
-/* keep the 3‑D canvas small & centred */
+/* Description text */
+.panel p {
+  max-width: 600px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* 3D canvas style */
 .model {
   width: 300px;
   height: 300px;
   margin: 20px auto 0;
-  pointer-events: none;   /* allow scroll */
+  pointer-events: none; /* allows scroll through */
 }
