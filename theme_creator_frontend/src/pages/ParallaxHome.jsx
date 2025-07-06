@@ -27,7 +27,11 @@ function Toothless({ y = 0 }) {
     }
   });
 
-  // Always return proper JSX, never an object or a function call result.
+  // Defensive: Only render primitive if scene is a valid object.
+  if (!scene) {
+    // Optionally could render a spinner or fallback mesh here instead of null.
+    return null;
+  }
   return <primitive ref={ref} object={scene} scale={0.8} position={[0, y, 0]} />;
 }
 
